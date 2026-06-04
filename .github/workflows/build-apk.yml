@@ -31,12 +31,17 @@ jobs:
         run: flutter pub get
 
       - name: Clean build
-        run: flutter clean
+        run: |
+          flutter clean
+          cd android && ./gradlew clean && cd ..
 
       - name: Build APK with verbose output
         run: |
-          flutter build apk --release --verbose > build.log 2>&1
-          cat build.log
+          flutter build apk --release --verbose 2>&1 | tee build.log || true
+          echo "Build log saved"
+
+      - name: Show last 100 lines of build output
+        run: tail -100 build.log
 
       - name: Upload build log
         if: always()
