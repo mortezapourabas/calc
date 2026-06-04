@@ -27,6 +27,12 @@ jobs:
           flutter-version: '3.16.0'
           channel: 'stable'
 
+      - name: Get Flutter info
+        run: flutter doctor -v
+
+      - name: Get dependencies
+        run: flutter pub get
+
       - name: Regenerate Android project
         run: |
           flutter clean
@@ -36,8 +42,18 @@ jobs:
           cd ..
           flutter create --platforms=android .
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build APK with full logging
+        run: |
+          flutter build apk --release 2>&1 | tee build_output.log
+          echo "===== BUILD OUTPUT ====="
+          cat build_output.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build_output.log
 
       - name: Upload APK as Artifact
         if: success()
