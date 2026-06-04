@@ -1,0 +1,16 @@
+include ':app'
+
+define('FlutterRoot', file(new File(rootDir.parentFile, '.fflutter').absolutePath))
+
+file('local.properties').withReader('UTF-8') { reader ->
+    reader.eachLine { line ->
+        if (line != null && line.contains('=')) {
+            String arr[] = line.split('=')
+            System.setProperty(arr[0], arr[1])
+        }
+    }
+}
+
+if (System.getProperty('flutter.sdk') != null) {
+    apply from: System.getProperty('flutter.sdk') + '/packages/flutter_tools/gradle/app_plugin_loader.gradle'
+}
